@@ -23,6 +23,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/invoices", invoiceRoutes);
-app.use("/ap1/v1/public", publicInvoiceRoutes);
+app.use("/api/v1/public", publicInvoiceRoutes);
 
 export default app;
