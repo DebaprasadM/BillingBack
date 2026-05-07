@@ -48,8 +48,7 @@ enum PaymentStatus {
   UNPAID
 }
 model Invoice {
-  id          String 
-    @id @default(uuid())
+  id          String @id @default(uuid())
 
   companyId   String
    customerId  String
