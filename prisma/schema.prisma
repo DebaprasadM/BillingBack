@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  memberships Membership[]
+  invoices    Invoice[]
+  customers   Customer[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  memberships Membership[]
+}
+
+model Membership {
+  id         String @id @default(uuid())
+  userId     String
+  companyId  String
+  role       String
+
+  user    User    @relation(fields: [userId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+enum PaymentStatus {
+  PAID
+  PARTIAL
+  UNPAID
+}
+model Invoice {
+  id          String   @id @default(uuid())
+
+  companyId   String
+   customerId  String
+
+  invoiceNo   String
+
+  subtotal    Float
+  discount    Float   @default(0)
+  total       Float
+
+  paidAmount    Float   @default(0)
+  dueAmount     Float
+
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  payments Payment[]
+
+  items InvoiceItem[]
+
+  @@index([companyId])
+  @@unique([companyId, invoiceNo])
+}
+
+model InvoiceItem {
+  id            String   @id @default(uuid())
+
+  invoiceId     String
+
+  // snapshot data
+  productName   String
+
+  quantity      Float
+  unit          String      // kg, pcs, litre etc.
+
+  unitPrice     Float       // price per unit
+  totalPrice    Float       // quantity * unitPrice
+
+  createdAt     DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+
+  companyId   String
+
+  name        String
+  whatsappNo  String
+
+  createdAt   DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  invoices Invoice[]
+
+  @@index([companyId])
+  @@unique([companyId, whatsappNo])
+}
+
+model Payment {
+  id          String   @id @default(uuid())
+
+  invoiceId   String
+
+  amount      Float
+
+  note        String?
+
+  createdAt   DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
