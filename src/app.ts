@@ -8,7 +8,7 @@ import invoiceRoutes from "./modules/invoice/invoice.route.js";
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:3000","https://pwvcxzd3-3000.inc1.devtunnels.ms"],
+  origin: ["http://localhost:3000","https://pwvcxzd3-3000.inc1.devtunnels.ms","https://debbilling.vercel.app"],
   credentials: true,
 }));
 app.use(express.json());
