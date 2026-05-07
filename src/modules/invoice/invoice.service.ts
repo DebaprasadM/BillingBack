@@ -132,6 +132,7 @@ export const createInvoice = async (
 
     const invoice = await tx.invoice.create({
       data: {
+        
         companyId,
         customerId: customer.id,
 
