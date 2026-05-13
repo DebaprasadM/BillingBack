@@ -3,6 +3,8 @@ import cors from "cors";
 import authRoutes from "./modules/auth/auth.route.js";
 import invoiceRoutes from "./modules/invoice/invoice.route.js";
 import publicInvoiceRoutes from "./modules/publicInvoice/publicInvoice.route.js";
+import productRoutes from "./modules/product/product.route.js";
+
 
 
 
@@ -24,5 +26,6 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/invoices", invoiceRoutes);
 app.use("/api/v1/public", publicInvoiceRoutes);
+app.use("/api/v1/products",productRoutes);
 
 export default app;

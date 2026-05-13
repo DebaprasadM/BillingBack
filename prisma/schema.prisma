@@ -21,6 +21,7 @@ model Company {
   memberships Membership[]
   invoices    Invoice[]
   customers   Customer[]
+  products    Product[]
 }
 
 model User {
@@ -51,7 +52,7 @@ model Invoice {
   id          String @id @default(uuid())
 
   companyId   String
-   customerId  String
+   customerId  String?
 
   invoiceNo   String
   publicId String @unique @default(cuid())
@@ -69,7 +70,7 @@ model Invoice {
   updatedAt   DateTime @updatedAt
 
   company Company @relation(fields: [companyId], references: [id])
-  customer Customer @relation(fields: [customerId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
 
   payments Payment[]
 
@@ -132,4 +133,35 @@ model Payment {
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@index([invoiceId])
+}
+
+model Product {
+
+  id String @id @default(uuid())
+
+  companyId String
+
+  name String
+
+  // OPTIONAL STOCK
+  stockQty Float?
+
+  // OPTIONAL DEFAULTS
+  defaultUnit String?
+  defaultPrice Float?
+
+  // OPTIONAL
+  barcode String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation( fields: [companyId], references: [id] )
+
+  @@index([companyId])
+
+  // prevent duplicate names per company
+  @@unique([companyId, name])
 }

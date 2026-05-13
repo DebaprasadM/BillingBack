@@ -11,8 +11,8 @@ type InvoiceItemInput = {
 };
 
 type CreateInvoiceInput = {
-  customerName: string;
-  customerWhatsappNo: string;
+  customerName?: string;
+  customerWhatsappNo?: string;
 
   items: InvoiceItemInput[];
 
@@ -44,9 +44,7 @@ export const createInvoice = async (
     throw new Error("Invoice items are required");
   }
 
-  if (!customerWhatsappNo) {
-    throw new Error("Customer whatsapp number is required");
-  }
+  
 
   // ==================================================
   // ✅ SUBTOTAL
@@ -87,32 +85,49 @@ export const createInvoice = async (
 
   return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
-    // ==================================================
-    // ✅ FIND CUSTOMER
-    // ==================================================
+   
+let customer = null;
 
-    let customer = await tx.customer.findUnique({
+// ==================================================
+// ✅ ONLY IF WHATSAPP EXISTS
+// ==================================================
+
+if (customerWhatsappNo) {
+
+  // FIND CUSTOMER
+
+  customer =
+    await tx.customer.findUnique({
       where: {
         companyId_whatsappNo: {
           companyId,
-          whatsappNo: customerWhatsappNo,
+
+          whatsappNo:
+            customerWhatsappNo,
         },
       },
     });
 
-    // ==================================================
-    // ✅ CREATE CUSTOMER
-    // ==================================================
+  // CREATE CUSTOMER
 
-    if (!customer) {
-      customer = await tx.customer.create({
+  if (!customer) {
+
+    customer =
+      await tx.customer.create({
         data: {
           companyId,
-          name: customerName,
-          whatsappNo: customerWhatsappNo,
+
+          name:
+            customerName ||
+
+            "Walk-in Customer",
+
+          whatsappNo:
+            customerWhatsappNo,
         },
       });
-    }
+  }
+}
 
     // ==================================================
     // ✅ GENERATE INVOICE NUMBER
@@ -134,7 +149,7 @@ export const createInvoice = async (
       data: {
         
         companyId,
-        customerId: customer.id,
+        customerId: customer?.id,
 
         invoiceNo,
 
