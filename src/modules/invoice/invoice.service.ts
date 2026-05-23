@@ -40,9 +40,43 @@ export const createInvoice = async (
   // ✅ VALIDATION
   // ==================================================
 
-  if (!items || items.length === 0) {
-    throw new Error("Invoice items are required");
+ if (!items || items.length === 0) {
+  throw new Error(
+    "Invoice items are required"
+  );
+}
+
+// ==================================================
+// ✅ ITEM VALIDATION
+// ==================================================
+
+for (const item of items) {
+
+  if (!item.productName?.trim()) {
+
+    throw new Error(
+      "Product name is required"
+    );
   }
+
+  if (item.quantity <= 0) {
+
+    throw new Error(
+      "Quantity must be greater than 0"
+    );
+  }
+
+  if (item.unitPrice < 0) {
+
+    throw new Error(
+      "Invalid unit price"
+    );
+  }
+}
+
+// ==================================================
+// ✅ SUBTOTAL
+// ==================================================
 
   
 
