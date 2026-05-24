@@ -1,7 +1,7 @@
 // src/modules/invoice/service.ts
 
 import prisma from "../../config/prisma.js";
-import { Prisma, PaymentStatus } from "@prisma/client";
+import { Prisma, PaymentStatus,PaymentMethod } from "@prisma/client";
 
 type InvoiceItemInput = {
   productName: string;
@@ -19,6 +19,7 @@ type CreateInvoiceInput = {
   paidAmount?: number;
 
   discount?: number;
+  paymentMethod?: PaymentMethod;
 };
 
 export const createInvoice = async (
@@ -34,6 +35,7 @@ export const createInvoice = async (
     paidAmount = 0,
 
     discount = 0,
+    paymentMethod = "CASH",
   } = payload;
 
   // ==================================================
@@ -194,6 +196,7 @@ if (customerWhatsappNo) {
         paidAmount,
         dueAmount,
 
+        paymentMethod,
         paymentStatus,
       },
     });

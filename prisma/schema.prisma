@@ -17,7 +17,8 @@ model Company {
   id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
-
+  upiId String?
+  upiName String?
   memberships Membership[]
   invoices    Invoice[]
   customers   Customer[]
@@ -41,12 +42,17 @@ model Membership {
 
   user    User    @relation(fields: [userId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
+  @@unique([userId, companyId])
 }
 
 enum PaymentStatus {
   PAID
   PARTIAL
   UNPAID
+}
+enum PaymentMethod {
+  CASH
+  ONLINE
 }
 model Invoice {
   id          String @id @default(uuid())
@@ -64,6 +70,7 @@ model Invoice {
   paidAmount    Float   @default(0)
   dueAmount     Float
 
+ paymentMethod PaymentMethod @default(CASH)
   paymentStatus PaymentStatus @default(UNPAID)
 
   createdAt   DateTime @default(now())
@@ -164,4 +171,5 @@ model Product {
 
   // prevent duplicate names per company
   @@unique([companyId, name])
+  @@unique([companyId, barcode])
 }
